@@ -1,3 +1,3 @@
 cmake -DOpenCV_Enable=ON .
-make clean
-make 
+#make clean
+#make 
