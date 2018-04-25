@@ -82,9 +82,7 @@ Original image (left) and convert it to raw data (right)
 
 #### OpenCV_Enable=OFF
 
-1. The demo project will only include rawscaler_hw.cpp , and will be a pure C++ project (No dependence library)
-2. The input file muse be bitmap file (.bmp)
-
+1. The input file muse be bitmap file (.bmp)
 
 ### Demo 
 

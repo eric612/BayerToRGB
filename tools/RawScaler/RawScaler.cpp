@@ -13,11 +13,11 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include "rawscaler.h"
 #ifdef openmp
 #include <omp.h>
 #endif
 #endif // !OpenCV
+#include "rawscaler.h"
 #include <math.h>
 #include <time.h>   /* 時間相關函數 */
 using namespace RawScaler;  
@@ -549,139 +549,68 @@ int main(int argc, char *argv[])
 	if (argc > 1) {
 		res = strcmp(argv[1], "test");
 	}
-#if defined(OutputDir) && defined(ImagePath) && defined(ImagePath2) && defined(ImagePath3) && defined(ImagePath4)
 	char dir[128];
 	sprintf(dir, "%s", OutputDir);
-	if (argc >= 2 && res == 0) {
-		int times = 1;
-		if (argc >= 3) {
-			times = atoi(argv[2]);
-		}
-		for (int i = 0; i < times; i++) {
-			float rand_val = ((rand() % 55) / 10.);
-			if (rand_val <= 1) {
-				rand_val = 1.00 + rand_val;
-			}
-			RawdataScaler scaler2;
-			scaler2.RunRandomTest(rand_val);
-			int w, h;
-			unsigned int* result = scaler2.GetOutput(w, h);
-			bitmap_image out_image(w, h);
-			unsigned char* dw_img3 = new unsigned char[w*h*3];
-			//RawProcessor scaler;
-			//scaler.BayerToRGB(result, dw_img3, w, h, w, h, mBayerType);
-			for (int i = 0; i < h; i++) {
-				int offset = i % 2;
-				for (int j = 0; j < w; j++) {
-					int val = result[i*w + j]>>4;
-					out_image.set_pixel(j, i, val, val, val);
-				}
-			}
 
-			char filename[128];
-			sprintf(filename, "%soutput_%03d.bmp", dir, i);
-			out_image.save_image(filename);
-			out_image.clear();
-			delete[] dw_img3;
-		}
+	res = -1;
+	if (argc > 1) {
+		res = strcmp(argv[1], "demo");
+	}
+	int index = 1;
+	int user_w = 0;
+	int user_h = 0;
 
+	if (argc >= 2 && res == 0) {			
+		if (argc >= 4) {
+			user_w = atoi(argv[2]);
+			user_h = atoi(argv[3]);
+		}
+	}
+	bitmap_image image= bitmap_image(ImagePath);
+	int in_width = image.get_width();
+	int in_height = image.get_height();
+	unsigned char* int_img = RGB2RAW(image, mBayerType);
+	unsigned char* dw_img2 = new unsigned char[in_width*in_height];
+	for (int i = 0; i < in_width*in_height; i++) {
+		dw_img2[i] = int_img[i];
+	}
+	float ratio = 3.5;
+	int out_height;// = raw_img.rows / ratio;
+	int out_width;// = raw_img.cols / ratio;
+	if (user_w <= in_width && user_w > 32 && user_h <= in_height && user_h > 32) {
+		out_width = user_w;
+		out_height = user_h;
 	}
 	else {
-		res = -1;
-		if (argc > 1) {
-			res = strcmp(argv[1], "demo");
-		}
-		int index = 1;
-		int user_w = 0;
-		int user_h = 0;
+		out_height = in_height / ratio;
+		out_width = in_width / ratio;
 
-		if (argc >= 2 && res == 0) {			
-			if (argc >= 4) {
-				user_w = atoi(argv[2]);
-				user_h = atoi(argv[3]);
-			}
-		}
-		bitmap_image image= bitmap_image(ImagePath);
-		int in_width = image.get_width();
-		int in_height = image.get_height();
-		unsigned char* int_img = RGB2RAW(image, mBayerType);
-		unsigned int* dw_img2 = new unsigned int[in_width*in_height];
-		for (int i = 0; i < in_width*in_height; i++) {
-			dw_img2[i] = int_img[i] * 16;
-		}
-		float ratio = 3.5;
-		int out_height;// = raw_img.rows / ratio;
-		int out_width;// = raw_img.cols / ratio;
-		if (user_w <= in_width && user_w > 32 && user_h <= in_height && user_h > 32) {
-			out_width = user_w;
-			out_height = user_h;
-		}
-		else {
-			out_height = in_height / ratio;
-			out_width = in_width / ratio;
-
-			out_width = out_width + (out_width % 2);
-			out_height = out_height + (out_height % 2);
-		}
-
-		RawdataScaler scaler2(dw_img2, in_width, in_height, mBayerType);
-		//unsigned char* dw_img3 = new unsigned char[out_width*out_height];
-		
-		unsigned int* dw_img4 = new unsigned int[out_width*out_height];
-		scaler2.RunScaler(out_width, out_height, dw_img4);
-
-		bitmap_image out_image(out_width, out_height);
-		int w = out_width;
-		for (int i = 0; i < out_height; i++) {
-			int offset = i % 2;
-			for (int j = 0; j < out_width; j++) {
-				int val = dw_img4[i*out_width + j]>>4;
-				out_image.set_pixel(j, i, val, val, val);
-			}
-		}
-		char dir[128];
-		sprintf(dir, "%s", OutputDir);
-		out_image.save_image(strcat(dir,"result_raw.bmp"));
-		delete[] int_img;
-		delete[] dw_img2;
-		//delete[] dw_img3;
-		delete[] dw_img4;
-		out_image.clear();
-		image.clear();
+		out_width = out_width + (out_width % 2);
+		out_height = out_height + (out_height % 2);
 	}
-#else
-	if (1) {
-		int times = 5;
-		for (int i = 0; i < times; i++) {
-			float rand_val = ((rand() % 55) / 10.);
-			if (rand_val <= 1) {
-				rand_val = 1.00 + rand_val;
-			}
-			RawdataScaler scaler2;
-			scaler2.RunRandomTest(rand_val);
-			int w, h;
-			unsigned int* result = scaler2.GetOutput(w, h);
-			bitmap_image out_image(w, h);
-			unsigned char* dw_img3 = new unsigned char[w*h * 3];
-			//RawProcessor scaler;
-			//scaler.BayerToRGB(result, dw_img3, w, h, w, h, mBayerType);
-			for (int i = 0; i < h; i++) {
-				int offset = i % 2;
-				for (int j = 0; j < w; j++) {
-					int val = result[i*w + j]>>4;
-					out_image.set_pixel(j, i, val, val, val);
-				}
-			}
-
-			char filename[128];
-			sprintf(filename, "output_%03d.bmp", i);
-			out_image.save_image(filename);
-			out_image.clear();
-			delete[] dw_img3;
+	RawProcessor scaler;
+	unsigned char* dw_img4 = new unsigned char[out_width*out_height*3];
+	scaler.BayerToRGB(dw_img2, dw_img4, in_width, in_height, out_width, out_height, mBayerType);
+	bitmap_image out_image(out_width, out_height);
+	int w = out_width;
+	for (int i = 0; i < out_height; i++) {
+		int offset = i % 2;
+		for (int j = 0; j < out_width; j++) {
+			int val1 = dw_img4[i*out_width*3 + j*3];
+			int val2 = dw_img4[i*out_width * 3 + j * 3 + 1];
+			int val3 = dw_img4[i*out_width * 3 + j * 3 + 2];
+			out_image.set_pixel(j, i, val3, val2, val1);
 		}
-
 	}
-#endif
+	sprintf(dir, "%s", OutputDir);
+	out_image.save_image(strcat(dir,"result_raw.bmp"));
+	delete[] int_img;
+	delete[] dw_img2;
+	//delete[] dw_img3;
+	delete[] dw_img4;
+	out_image.clear();
+	image.clear();
+
 	return 0;
 }
 #endif
