@@ -10,7 +10,9 @@ branches:
   only:
   - master
 
-script: sudo sh build.sh
+script:
+  - mkdir out
+  - cmake -DOpenCV_Enable=ON .
 
 
 notifications:
