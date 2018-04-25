@@ -10,7 +10,7 @@ branches:
   only:
   - master
 
-script: sudo ./build.sh
+script: sudo sh build.sh
 
 
 notifications:
