@@ -12,7 +12,8 @@ branches:
 
 script:
   - mkdir out
-  - cmake -DOpenCV_Enable=ON .
+  - cmake -DOpenCV_Enable=OFF .
+  - make
 
 
 notifications:
