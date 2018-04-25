@@ -350,21 +350,26 @@ void Bayer2RGB(unsigned char* img,int in_width,int in_height,int out_width,int o
 
 	cv::imwrite(filename, dst);
 	unsigned char* dw_img4 = new unsigned char[(in_width + pad_w)*(in_height + pad_w)];
-	unsigned char* dw_img5 = new unsigned char[(out_width )*(out_height ) * 3];
+	unsigned char* dw_img5 = new unsigned char[(out_width + pad_w)*(out_height + pad_w) * 3];
 	Mat2Char(dst, dw_img4, 1);
 
-	scaler.BayerToRGB(dw_img4, dw_img5, in_width + pad_w, in_height + pad_w, out_width, out_height, mBayerType);
+	scaler.BayerToRGB(dw_img4, dw_img5, in_width + pad_w, in_height + pad_w, out_width + pad_w, out_height + pad_w, mBayerType);
 
 
-	cv::Mat test(out_height, out_width, CV_8UC3);
+	cv::Mat test(out_height + pad_w, out_width + pad_w, CV_8UC3);
 
 	Char2Mat(dw_img5, test, 3);
 
+	cv::Rect myROI(pad, pad, out_width, out_height);
+	// Crop the full image to that image contained by the rectangle myROI
+	// Note that this doesn't copy the data
+	cv::Mat croppedImage = test(myROI);
+
 	sprintf(filename, "%sresult.png", dir);
 
-	cv::imwrite(filename, test);
+	cv::imwrite(filename, croppedImage);
 
-	cv::imshow("demo", test);
+	cv::imshow("demo", croppedImage);
 	src.release();
 	test.release();
 	delete[] dw_img4;
@@ -401,7 +406,7 @@ int main(int argc, char *argv[])
 	RawProcessor scaler;
 	cv::Mat raw_img = RGB2RAW(img, mBayerType);
 
-	float ratio = 1.5;
+	float ratio = 1.;
 	int in_height = raw_img.rows ;
 	int in_width = raw_img.cols ;
 	
