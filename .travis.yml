@@ -1,0 +1,22 @@
+language: cpp
+sudo: false
+dist: trusty
+compiler:
+- g++
+os:
+- linux
+
+branches:
+  only:
+  - master
+
+script: ./build.sh
+
+
+notifications:
+  email:
+    - ericliu612@gmail.com
+
+env:
+  global:
+  - LANG="en_US.UTF-8"
