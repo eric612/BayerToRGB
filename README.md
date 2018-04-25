@@ -17,7 +17,7 @@ This is an image processing demo project , which can do raw data interpolation a
 <img width="200" src=/data/kodim19.png>
 <img width="200" src=rgb2raw.png> <br>
 
-Original image (left) and convert it to raw data (right)
+Original image (Top) and convert it to raw data (Bottom)
 
 
 ### Raw to rgb (our interpolation)
@@ -48,6 +48,8 @@ Original image (left) and convert it to raw data (right)
 > git clone https://gitlab.com/eric.liu/RawScaler.git
 > cd $RawScaler_root/script
 > build_win.cmd
+> cd $RawScaler_root
+> mkdir out
 ```
 
 ### Configuring RawScaler (Windows)
@@ -55,7 +57,6 @@ Original image (left) and convert it to raw data (right)
 ```
 > Edit build_win.cmd
 > Set DOpenCV_Enable ON/OFF 
-> Set Dfixpoint_cut ON/OFF 
 ```
 
 ## Linux Setup

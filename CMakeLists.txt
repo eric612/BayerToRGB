@@ -18,7 +18,6 @@ project (RawScaler C CXX)
 # The version number.
 set (RawScaler_VERSION_MAJOR 1)
 set (RawScaler_VERSION_MINOR 0)
-option(fixpoint_cut "for hardware design" ON)
 option(OpenCV_Enable "for hardware design" ON)
 option(openmp "for hardware design" ON)
 
@@ -64,20 +63,11 @@ file(GLOB RawScaler_TOOL
 )
 add_executable(RawScaler ${RawScaler_TOOL})
 
-IF(OpenCV_Enable MATCHES ON) 
-# add the libraries
 file(GLOB RawScaler_SRC
     "include/*.h"
 	"include/*.hpp"
     "src/*.cpp"
 )
-ELSE()
-file(GLOB RawScaler_SRC
-    "include/rawscaler_hw.h"
-	"include/*.hpp"
-    "src/rawscaler_hw.cpp"
-	)
-ENDIF()
 
 add_library(RawScalerLib ${RawScaler_SRC})
 target_link_libraries (RawScaler RawScalerLib)
@@ -207,7 +197,5 @@ else()
 
 endif()
 
-install (TARGETS RawScalerLib DESTINATION bin)
-  # set back RUNTIME_OUTPUT_DIRECTORY
 
 

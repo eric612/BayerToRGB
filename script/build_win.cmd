@@ -8,7 +8,7 @@ if NOT DEFINED CMAKE_CONFIG set CMAKE_CONFIG=Release
 
 cmake -DCMAKE_GENERATOR="Visual Studio 14 2015 Win64" ^
 	  -DCMAKE_BUILD_TYPE:STRING=%CMAKE_CONFIG% ^
-	  -DOpenCV_Enable=OFF ^
+	  -DOpenCV_Enable=ON ^
       ::-DCMAKE_PREFIX_PATH="OpenCV" ^
       "%~dp0\.."
 :: Build the library and tools
