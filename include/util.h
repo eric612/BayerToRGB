@@ -21,7 +21,6 @@ namespace RawScaler {
 	float distance(float x, float y, float i, float j);
 	float pow_distance(float x, float y, float i, float j);
 	double gaussian(float x, double sigma);
-	void ReSize(int iwidth, int iheight, int newwidth, int newheight, unsigned char* data, unsigned char* out);
 	unsigned char fixpoint_cut_uc(int value, int bit);
 	char fixpoint_cut_c(int value, int bit);
 	//void DownSample(unsigned char* in, unsigned char* out, int width, int height, BayerType type);
