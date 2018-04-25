@@ -88,11 +88,6 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 
 
 
-IF(fixpoint_cut MATCHES ON) 
-	add_definitions(-D_enable_fix_point_cut)
-ENDIF(fixpoint_cut MATCHES ON) 
-
-
 
 IF(OpenCV_Enable MATCHES ON) 
 	add_definitions(-DOpenCV)
@@ -180,8 +175,10 @@ if("${CMAKE_GENERATOR}" MATCHES "Visual Studio 14 2015 Win64")
 else()	
 	message("\n============== Linux " ${arch_hint} " build ===================\n")
 	message(STATUS "CMAKE_GENERATOR: ${CMAKE_GENERATOR}")
-	find_package( OpenCV REQUIRED )
-	target_link_libraries( RawScaler ${OpenCV_LIBS} )
+	IF(OpenCV_Enable MATCHES ON) 
+		find_package( OpenCV REQUIRED )
+		target_link_libraries( RawScaler ${OpenCV_LIBS} )
+	ENDIF()
 	#message(FATAL_ERROR "CMAKE_GENERATOR do net match Visual Studio 14 2015 Win64")
 	IF(openmp MATCHES ON) 
 		find_package(OpenMP)
