@@ -6,6 +6,8 @@ This is an image processing demo project , which can do raw data interpolation a
 
 ## Feature 
 
+[![Build Status](https://travis-ci.org/eric612/BayerToRGB.svg?branch=master)](https://travis-ci.org/eric612/BayerToRGB)
+
 1. Hight quility bayer interpolation and scaler in raw domain
 2. Can be build in pure C++ project (No dependence library)
 3. Cmake build (support linux and windows platform)
