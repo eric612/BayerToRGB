@@ -439,6 +439,100 @@ int main(int argc, char *argv[])
 	return 0;
 }
 #else
+void Crop_Area_Image(unsigned char *i_data, unsigned char  *o_data, int width, int st_x, int st_y, int w, int h)
+{
+	int w_line_org = width * 3;
+	int w_line = w * 3;
+	int i_pos, o_pos;
+
+	o_pos = 0;
+	i_pos = st_y*w_line_org + st_x * 3;
+	for (int y = 0; y<h; y++)
+	{
+		memcpy(o_data + o_pos, i_data + i_pos, sizeof(unsigned char)*w_line);
+		i_pos += w_line_org;
+		o_pos += w_line;
+	}
+
+}
+unsigned char* MakeRawBorder(unsigned char* img1, int pad_width, int width, int height)
+{
+	int i, j;
+	unsigned char* img2 = new unsigned char[(width + pad_width * 2) * (height + pad_width * 2)];
+	//#pragma omp parallel for
+	for (i = 0; i < height; i++) {
+		const unsigned char* ptr1 = &img1[i*width];
+		unsigned char* ptr2 = &img2[(i + pad_width)*(width + pad_width * 2)];
+		int img_index1 = 0;
+		int img_index2 = pad_width;
+		for (j = 0; j < width; j++) {
+
+			if (j == 0) {
+				for (int k = 0; k < pad_width + 1; k++) {
+					if (k % 2 == 0) {
+						ptr2[img_index2 - k] = ptr1[img_index1];
+					}
+					else {
+						ptr2[img_index2 - k] = ptr1[img_index1 + 1];
+					}
+				}
+			}
+			else if (j == width - 1) {
+				for (int k = 0; k < pad_width + 1; k++) {
+
+					if (k % 2 == 0) {
+						ptr2[img_index2 + k] = ptr1[img_index1];
+					}
+					else {
+						ptr2[img_index2 + k] = ptr1[img_index1 - 1];
+					}
+				}
+			}
+			else {
+				ptr2[img_index2] = ptr1[img_index1];
+			}
+			img_index1++;
+			img_index2++;
+		}
+	}
+	for (i = 0; i < pad_width; i++) {
+		const unsigned char* ptr1;
+		if (i % 2 == 0) {
+			ptr1 = &img2[(pad_width + 1)*(width + pad_width * 2)];
+		}
+		else {
+			ptr1 = &img2[(pad_width)*(width + pad_width * 2)];
+		}
+
+		unsigned char* ptr2 = &img2[(pad_width - 1 - i)*(width + pad_width * 2)];
+		int img_index1 = 0;
+		int img_index2 = 0;
+		for (j = 0; j < width + pad_width * 2; j++) {
+			ptr2[img_index2] = ptr1[img_index1];
+			img_index1++;
+			img_index2++;
+		}
+	}
+	for (i = 0; i < pad_width; i++) {
+		const unsigned char* ptr1;
+		if (i % 2 == 0) {
+			ptr1 = &img2[(height + pad_width - 2)*(width + pad_width * 2)];
+		}
+		else {
+			ptr1 = &img2[(height + pad_width - 1)*(width + pad_width * 2)];
+		}
+		unsigned char* ptr2 = &img2[(pad_width + height + i)*(width + pad_width * 2)];
+		int img_index1 = 0;
+		int img_index2 = 0;
+		for (j = 0; j < width + pad_width * 2; j++) {
+			ptr2[img_index2] = ptr1[img_index1];
+			img_index1++;
+			img_index2++;
+		}
+	}
+	//eqm /= height * width;
+	return img2;
+}
 unsigned char* RGB2RAW(bitmap_image src, BayerType type = BGGR)
 {
 	int w = src.get_width();
@@ -574,12 +668,11 @@ int main(int argc, char *argv[])
 	bitmap_image image= bitmap_image(ImagePath);
 	int in_width = image.get_width();
 	int in_height = image.get_height();
-	unsigned char* int_img = RGB2RAW(image, mBayerType);
-	unsigned char* dw_img2 = new unsigned char[in_width*in_height];
-	for (int i = 0; i < in_width*in_height; i++) {
-		dw_img2[i] = int_img[i];
-	}
-	float ratio = 3.5;
+	unsigned char* dw_img2 = RGB2RAW(image, mBayerType);
+	int pad = 6;
+	int pad_w = pad * 2;
+	unsigned char* pad_img = MakeRawBorder(dw_img2, pad,in_width,in_height);
+	float ratio = 1.;
 	int out_height;// = raw_img.rows / ratio;
 	int out_width;// = raw_img.cols / ratio;
 	if (user_w <= in_width && user_w > 32 && user_h <= in_height && user_h > 32) {
@@ -593,26 +686,35 @@ int main(int argc, char *argv[])
 		out_width = out_width + (out_width % 2);
 		out_height = out_height + (out_height % 2);
 	}
+	out_width += pad_w;
+	out_height += pad_w;
 	RawProcessor scaler;
 	unsigned char* dw_img4 = new unsigned char[out_width*out_height*3];
-	scaler.BayerToRGB(dw_img2, dw_img4, in_width, in_height, out_width, out_height, mBayerType);
+	unsigned char* dw_img5 = new unsigned char[(out_width-pad_w)*(out_height - pad_w) * 3];
+	scaler.BayerToRGB(pad_img, dw_img4, in_width+ pad_w, in_height+ pad_w, out_width, out_height, mBayerType);
+
+	Crop_Area_Image(dw_img4, dw_img5, out_width, pad, pad, out_width - pad_w, out_height - pad_w);
+
+	out_width -= pad_w;
+	out_height -= pad_w;
+
 	bitmap_image out_image(out_width, out_height);
 	int w = out_width;
 	for (int i = 0; i < out_height; i++) {
 		int offset = i % 2;
 		for (int j = 0; j < out_width; j++) {
-			int val1 = dw_img4[i*out_width*3 + j*3];
-			int val2 = dw_img4[i*out_width * 3 + j * 3 + 1];
-			int val3 = dw_img4[i*out_width * 3 + j * 3 + 2];
+			int val1 = dw_img5[i*out_width*3 + j*3];
+			int val2 = dw_img5[i*out_width * 3 + j * 3 + 1];
+			int val3 = dw_img5[i*out_width * 3 + j * 3 + 2];
 			out_image.set_pixel(j, i, val3, val2, val1);
 		}
 	}
 	sprintf(dir, "%s", OutputDir);
 	out_image.save_image(strcat(dir,"result_raw.bmp"));
-	delete[] int_img;
 	delete[] dw_img2;
-	//delete[] dw_img3;
+	delete[] pad_img;
 	delete[] dw_img4;
+	delete[] dw_img5;
 	out_image.clear();
 	image.clear();
 
