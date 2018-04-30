@@ -14,6 +14,10 @@ This is an image processing demo project , which can do raw data interpolation a
 
 ## Performance
 
+Compare result (right bottom) with [website](https://thedailynathan.com/demosaic/comparison.php?image=raw.png)
+
+![ip.png](ip.png)
+
 ### Original image and raw
 
 <img width="200" src=/data/kodim19.png>
