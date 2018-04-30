@@ -461,7 +461,7 @@ namespace RawScaler {
 						}
 						else {
 							temp_g[img_index] = Interpolation_G_Only(in, j, i, iwidth);
-							temp_gr[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -127, 127) + 127;
+							temp_gr[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -255, 255) / 2 + 127;
 						}
 					}
 					else {
@@ -470,7 +470,7 @@ namespace RawScaler {
 						}
 						else {
 							temp_g[img_index] = Interpolation_G_Only(in, j, i, iwidth);
-							temp_gb[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -127, 127) + 127;
+							temp_gb[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -255, 255) / 2 + 127;
 						}
 					}
 					break;
@@ -482,7 +482,7 @@ namespace RawScaler {
 						else {
 							if (1) {
 								temp_g[img_index] = Interpolation_G_Only(in, j, i, iwidth);								
-								temp_gb[img_rb_index] = BOUND(in[img_index] - temp_g[img_index],-127,127)+127;
+								temp_gb[img_rb_index] = BOUND(in[img_index] - temp_g[img_index],-255, 255) / 2 +127;
 							}
 						}
 					}
@@ -494,7 +494,7 @@ namespace RawScaler {
 							if (1) {
 	
 								temp_g[img_index] = Interpolation_G_Only(in, j, i, iwidth);
-								temp_gr[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -127, 127) + 127;
+								temp_gr[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -255, 255) / 2 + 127;
 							}
 						}
 					}
@@ -507,7 +507,7 @@ namespace RawScaler {
 						}
 						else {
 							temp_g[img_index] = Interpolation_G_Only(in, j, i, iwidth);
-							temp_gr[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -127, 127) + 127;
+							temp_gr[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -255, 255) / 2 + 127;
 						}
 					}
 					else {
@@ -516,7 +516,7 @@ namespace RawScaler {
 						}
 						else {
 							temp_g[img_index] = Interpolation_G_Only(in, j, i, iwidth);
-							temp_gb[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -127, 127) + 127;
+							temp_gb[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -255, 255) / 2 + 127;
 						}
 					}
 					break;
@@ -527,7 +527,7 @@ namespace RawScaler {
 						}
 						else {
 							temp_g[img_index] = Interpolation_G_Only(in, j, i, iwidth);
-							temp_gb[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -127, 127) + 127;
+							temp_gb[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -255, 255) / 2 + 127;
 						}
 					}
 					else {
@@ -536,7 +536,7 @@ namespace RawScaler {
 						}
 						else {
 							temp_g[img_index] = Interpolation_G_Only(in, j, i, iwidth);
-							temp_gr[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -127, 127) + 127;
+							temp_gr[img_rb_index] = BOUND(in[img_index] - temp_g[img_index], -255, 255) / 2 + 127;
 						}
 					}
 					break;
@@ -608,14 +608,14 @@ namespace RawScaler {
 						rg[7] = temp_g2r[img_rb_index + (dwidth / 2)];
 						rg[8] = temp_g2r[img_rb_index + (dwidth / 2) + 1];
 
-						out[img_index * 3] = BOUND(temp_g2[img_index] + (temp_g2b[img_rb_index] - 127), 0, 255);
+						out[img_index * 3] = BOUND(temp_g2[img_index] + (temp_g2b[img_rb_index] - 127)*2, 0, 255);
 						//out[img_index * 3] = BOUND(temp_g2[img_index] + (GetMedian(bg, 2) - 127), 0, 255);
-						out[img_index * 3 + 2] = BOUND(temp_g2[img_index] + (temp_g2r[img_rb_index] - 127), 0, 255);
+						out[img_index * 3 + 2] = BOUND(temp_g2[img_index] + (temp_g2r[img_rb_index] - 127) * 2, 0, 255);
 						//out[img_index * 3 + 2] = BOUND(temp_g2[img_index] + (GetMedian(rg, 2) - 127), 0, 255);
 					}
 					else {
-						out[img_index * 3] = BOUND(temp_g2[img_index] + (temp_g2b[img_index] - 127), 0, 255);
-						out[img_index * 3 + 2] = BOUND(temp_g2[img_index] + (temp_g2r[img_index] - 127), 0, 255);
+						out[img_index * 3] = BOUND(temp_g2[img_index] + (temp_g2b[img_index] - 127) * 2, 0, 255);
+						out[img_index * 3 + 2] = BOUND(temp_g2[img_index] + (temp_g2r[img_index] - 127) * 2, 0, 255);
 					}
 
 					
