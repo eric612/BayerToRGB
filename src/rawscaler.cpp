@@ -120,7 +120,7 @@ namespace RawScaler {
 		rv[1] = r0v;
 		rv[2] = r1v;
 		rv[3] = in[(y + 2) * width + x];
-		rh[4] = in[(y - 2) * width + x];
+		rv[4] = in[(y - 2) * width + x];
 
 		float gr_std_h = GetStd(grh, kernel_size);
 		float gr_std_v = GetStd(grv, kernel_size);
